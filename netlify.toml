@@ -1,0 +1,22 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NODE_ENV = "production"
+
+[[redirects]]
+  from = "/admin"
+  to = "/ckb/admin"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/login"
+  to = "/ckb/login"
+  status = 302
+  force = true
