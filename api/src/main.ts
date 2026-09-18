@@ -1,36 +1,23 @@
 import "reflect-metadata";
-import fs from "node:fs";
-import path from "node:path";
-import dotenv from "dotenv";
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { AppModule } from "./app.module";
 
-function loadEnvironment() {
-  const candidates = [
-    path.resolve(process.cwd(), ".env"),
-    path.resolve(process.cwd(), "..", ".env"),
-    path.resolve(__dirname, "../../../../.env"),
-  ];
-  const envPath = candidates.find((candidate) => fs.existsSync(candidate));
-  if (envPath) {
-  }
-}
-
-loadEnvironment();
+// لەسەر Vercel پێویست بە خوێندنەوەی فایلی .env ناکات
+// چونکە ڤێرسڵ خۆی گۆڕاوە ژینگەیییەکان دەخاتە ناو process.env ڕاستەوخۆوە.
 
 async function bootstrap() {
   if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is required. Create .env from .env.example.");
+    throw new Error("DATABASE_URL is required. Check your Vercel Environment Variables.");
   }
-  if (!process.env.AUTH_SECRET || process.env.AUTH_SECRET.length < 32) {
-    throw new Error("AUTH_SECRET must be at least 32 characters");
-  }
+
   const app = await NestFactory.create(AppModule);
+  
   app.enableCors({
     origin: process.env.WEB_ORIGIN ?? "http://localhost:3000",
     credentials: true,
   });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -38,7 +25,10 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  await app.listen(Number(process.env.API_PORT ?? 4000));
+
+  // لەسەر Vercel پێویست ناکات پۆرت دیاری بکەین، بەڵام بۆ ئەوەی لۆکاڵیش کار بکات دەیهێڵینەوە
+  const port = process.env.PORT || process.env.API_PORT || 4000;
+  await app.listen(Number(port));
 }
 
 void bootstrap();
