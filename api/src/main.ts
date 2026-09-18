@@ -14,7 +14,6 @@ function loadEnvironment() {
   ];
   const envPath = candidates.find((candidate) => fs.existsSync(candidate));
   if (envPath) {
-    dotenv.config({ path: envPath });
   }
 }
 
